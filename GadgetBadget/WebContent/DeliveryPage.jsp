@@ -14,7 +14,7 @@ pageEncoding="ISO-8859-1"%>
 <div class="container"><div class="row"><div class="col-6"> 
 <h1>Delivery Management</h1>
 <form id="formItem" name="formDelivery">
- Order Id: 
+ 	Order Id: 
  <input id="orderId" name="orderId" type="text" 
  class="form-control form-control-sm">
  <br> User Id: 
@@ -35,8 +35,8 @@ pageEncoding="ISO-8859-1"%>
  <br>
  <input id="btnSave" name="btnSave" type="button" value="Save" 
  class="btn btn-primary">
- <input type="hidden" id="hidItemIDSave" 
- name="hidItemIDSave" value="">
+ <input type="hidden" id="deliveryId" 
+ name="deliveryId" >
 </form>
 <div id="alertSuccess" class="alert alert-success"></div>
 <div id="alertError" class="alert alert-danger"></div>

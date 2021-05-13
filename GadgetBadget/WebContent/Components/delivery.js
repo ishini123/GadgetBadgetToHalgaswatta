@@ -18,10 +18,10 @@ $(document).on("click", "#btnSave", function (event) {
         return;
     }
     // If valid------------------------
-    var type = ($("#hidItemIDSave").val() == "") ? "POST" : "PUT";
+    var type = ($("#deliveryId").val() == "") ? "POST" : "PUT";
     $.ajax(
         {
-            url: "PaymentDeliveryService/payment",
+            url: "PaymentDeliveryService/delivery",
             type: type,
             data: $("#formItem").serialize(),
             dataType: "text",
@@ -33,11 +33,11 @@ $(document).on("click", "#btnSave", function (event) {
 
 function onItemSaveComplete(response, status) {
     if (status == "success") {
-        
-            $("#alertSuccess").text(response);
-            $("#alertSuccess").show();
 
-      
+        $("#alertSuccess").text(response);
+        $("#alertSuccess").show();
+
+
     } else if (status == "error") {
         $("#alertError").text("Error while saving.");
         $("#alertError").show();
@@ -45,43 +45,48 @@ function onItemSaveComplete(response, status) {
         $("#alertError").text("Unknown error while saving..");
         $("#alertError").show();
     }
-    $("#hidItemIDSave").val("");
+    $("#deliveryId").val("");
     $("#formItem")[0].reset();
 }
 
 $(document).on("click", ".btnUpdate", function (event) {
-    console.log('on update click ', $(this).data("paymentId"))
-    $("#hidItemIDSave").val($(this).data("paymentId"));
-    $("#userId").val($(this).closest("tr").find('td:eq(0)').text());
-    $("#orderId").val($(this).closest("tr").find('td:eq(1)').text());
-    $("#amount").val($(this).closest("tr").find('td:eq(2)').text());
+    $("#deliveryId").val($(this).data("deliveryId"));
+    $("#deliveryId").val($(this).closest("tr").find('td:eq(0)').text());
+    $("#paymentId").val($(this).closest("tr").find('td:eq(1)').text());
+    $("#orderId").val($(this).closest("tr").find('td:eq(2)').text());
+    $("#userId").val($(this).closest("tr").find('td:eq(3)').text());
+    $("#deliveryPersionId").val($(this).closest("tr").find('td:eq(4)').text());
+    $("#address").val($(this).closest("tr").find('td:eq(5)').text());
+    $("#status").val($(this).closest("tr").find('td:eq(6)').text());
+    $("#updatedDate").val($(this).closest("tr").find('td:eq(7)').text());
+
 
 });
 
 $(document).on("click", ".btnRemove", function (event) {
+    var datax = {
+        deliveryId: `${$(this).closest("tr").find('td:eq(0)').text()}`
+    }
+
     $.ajax(
         {
-            url: "ItemsAPI",
+            url: "PaymentDeliveryService/delivery",
             type: "DELETE",
-            data: "itemID=" + $(this).data("itemid"),
-            dataType: "text",
+            data: JSON.stringify(datax),
+            dataType: 'json',
+            contentType: 'application/json',
             complete: function (response, status) {
-                onItemDeleteComplete(response.responseText, status);
+                onItemDeleteComplete(response, status);
             }
         });
 });
-
 function onItemDeleteComplete(response, status) {
-    if (status == "success") {
-        var resultSet = JSON.parse(response);
-        if (resultSet.status.trim() == "success") {
-            $("#alertSuccess").text("Successfully deleted.");
-            $("#alertSuccess").show();
-            $("#divItemsGrid").html(resultSet.data);
-        } else if (resultSet.status.trim() == "error") {
-            $("#alertError").text(resultSet.data);
-            $("#alertError").show();
-        }
+    if (response.status == 200) {
+
+        $("#alertSuccess").text(response.responseText);
+        $("#alertSuccess").show();
+
+
     } else if (status == "error") {
         $("#alertError").text("Error while deleting.");
         $("#alertError").show();
@@ -89,27 +94,36 @@ function onItemDeleteComplete(response, status) {
         $("#alertError").text("Unknown error while deleting..");
         $("#alertError").show();
     }
+    $("#deliveryId").val("");
+    $("#formItem")[0].reset();
 }
 function validateItemForm() {
     // amount
-    if ($("#amount").val().trim() == "") {
-        return "Insert total price.";
+    if ($("#paymentId").val().trim() == "") {
+        return "Insert paymentId.";
     }
     // order id
     if ($("#orderId").val().trim() == "") {
         return "Insert order Id.";
-    } 
+    }
     // user id-------------------------------
     if ($("#userId").val().trim() == "") {
         return "Insert userId.";
     }
-    // is numerical value
-    var amount = $("#amount").val().trim();
-    if (!$.isNumeric(amount)) {
-        return "Insert a numerical value for Price.";
+    // deliveryPerson id-------------------------------
+    if ($("#deliveryPersionId").val().trim() == "") {
+        return "Insert Delivery person id.";
     }
-    // convert to decimal price
-    $("#amount").val(parseFloat(amount).toFixed(2));
-    
+
+    // status -------------------------------
+    if ($("#status").val().trim() == "") {
+        return "Insert status.";
+    }
+
+    // address-------------------------------
+    if ($("#address").val().trim() == "") {
+        return "Insert address.";
+    }
+
     return true;
 }
